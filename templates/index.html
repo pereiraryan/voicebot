@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Bot Appointment Scheduler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        #prompt {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        #user_input {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        #start-recognition {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #start-recognition:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Appointment Scheduler</h1>
+        <p id="prompt">Speak to schedule an appointment:</p>
+        <input type="text" id="user_input" placeholder="Your response..." disabled>
+        <form id="voice-form" method="POST" action="/voicebot" style="display: none;">
+            <input type="hidden" id="speech-text" name="speech_text">
+        </form>
+
+        <button id="start-recognition">Start Listening</button>
+    </div>
+
+    <script>
+        const recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = function (event) {
+            const result = event.results[0][0].transcript;
+            document.getElementById('user_input').value = result;
+            document.getElementById('speech-text').value = result;
+            document.getElementById('voice-form').submit();
+
+        }
+
+        document.getElementById('start-recognition').addEventListener('click', function () {
+            recognition.start();
+            document.getElementById('prompt').innerText = 'Listening... (Click again to stop)';
+        });
+
+        recognition.onend = function () {
+            document.getElementById('prompt').innerText = 'Speak to schedule an appointment:';
+        }
+    </script>
+</body>
+
+</html>
